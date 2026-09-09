@@ -1,0 +1,80 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Skill: Agile Documentation Generator (Proactive Mode)",
+    "version": "4.1.0"
+  },
+  "paths": {
+    "/api/v3/agile/generate_story": {
+      "post": {
+        "operationId": "generate_scrum_gherkin_doc",
+        "summary": "Builds the User Story, auto-completing missing data.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role": { "type": "string" },
+                  "action": { "type": "string" },
+                  "business_value": { "type": "string" },
+                  "business_rules": { "type": "array", "items": { "type": "string" } },
+                  "pre_conditions": { "type": "array", "items": { "type": "string" } },
+                  "post_conditions": { "type": "array", "items": { "type": "string" } },
+                  "acceptance_criteria": {
+                    "type": "array",
+                    "description": "List of BDD scenarios written in Gherkin syntax.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "scenario_name": { "type": "string" },
+                        "gherkin_text": { 
+                          "type": "string", 
+                          "description": "The exact Given-When-Then steps." 
+                        }
+                      },
+                      "required": ["scenario_name", "gherkin_text"]
+                    }
+                  },
+                  "inferred_fields": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["READY_FOR_DEV", "PENDING_HUMAN_REVIEW"]
+                  },
+                  "telemetry": {
+                    "type": "object",
+                    "properties": {
+                      "inferred_elements_count": { "type": "integer" },
+                      "high_inference_alert": { "type": "boolean" },
+                      "security_threat_detected": { "type": "boolean" },
+                      "logical_conflict": { "type": "boolean" }
+                    },
+                    "required": [
+                      "inferred_elements_count", 
+                      "high_inference_alert",
+                      "security_threat_detected",
+                      "logical_conflict"
+                    ]
+                  }
+                },
+                "required": [
+                  "role",
+                  "action",
+                  "business_value",
+                  "acceptance_criteria",
+                  "inferred_fields", 
+                  "status", 
+                  "telemetry"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

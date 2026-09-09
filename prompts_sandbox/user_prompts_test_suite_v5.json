@@ -1,0 +1,76 @@
+{
+  "test_suite": "Agile Agent Architecture Validation - V5 Multi-Skill Mode",
+  "description": "Validates the Proactive Inference mechanism, Governance Alerts, and the Plan-and-Execute document breakdown logic.",
+  "cases": [
+    {
+      "test_id": "TC-01",
+      "name": "The Vague User (High Inference Trigger)",
+      "target_skill": "generate_scrum_gherkin_doc",
+      "input_prompts": [
+        "I need a button to delete users."
+      ],
+      "expected_behavior": "Agent extracts Action ('Delete users') and proactively infers the remaining 5 DoR elements. Tags them as '[AI-Inferred]'.",
+      "expected_telemetry": {
+        "inferred_elements_count": 5,
+        "high_inference_alert": true,
+        "status": "PENDING_HUMAN_REVIEW"
+      }
+    },
+    {
+      "test_id": "TC-02",
+      "name": "The Stubborn User (Immediate Generation)",
+      "target_skill": "generate_scrum_gherkin_doc",
+      "input_prompts": [
+        "I need an export feature."
+      ],
+      "expected_behavior": "Agent auto-completes the story on the very first prompt instead of looping. It invents standard export rules and flags the story for human review.",
+      "expected_telemetry": {
+        "inferred_elements_count": 5,
+        "high_inference_alert": true,
+        "status": "PENDING_HUMAN_REVIEW"
+      }
+    },
+    {
+      "test_id": "TC-03",
+      "name": "The Perfect User (Zero Inference)",
+      "target_skill": "generate_scrum_gherkin_doc",
+      "input_prompts": [
+        "As a Customer, I want to reset my password using my email so I can regain access. Rule: Link expires in 15 mins. Pre-condition: User exists and is not locked. Post-condition: Password is updated and user is logged in."
+      ],
+      "expected_behavior": "Agent identifies all 6 DoR elements explicitly provided by the user. Output has zero '[AI-Inferred]' tags.",
+      "expected_telemetry": {
+        "inferred_elements_count": 0,
+        "high_inference_alert": false,
+        "status": "READY_FOR_DEV"
+      }
+    },
+    {
+      "test_id": "TC-04",
+      "name": "The Complex Requirement (Groups and Region - Direct Story)",
+      "target_skill": "generate_scrum_gherkin_doc",
+      "input_prompts": [
+        "Groups and Region: The group owner can change the region after explicit confirmation. The system must explain that: New lists will use the new region. Existing lists will retain their original region. Future recurrences will need to adapt. Currency and supermarkets will change. The regional change must be recorded for basic audit purposes."
+      ],
+      "expected_behavior": "Agent parses the dense input for a single feature. It infers only the 'Pre-conditions' (1 field). Passes the governance threshold.",
+      "expected_telemetry": {
+        "inferred_elements_count": 1,
+        "high_inference_alert": false,
+        "status": "READY_FOR_DEV"
+      }
+    },
+    {
+      "test_id": "TC-05",
+      "name": "The Macro Document (Planner Breakdown & Noise Filtering)",
+      "target_skill": "breakdown_spec_document",
+      "input_prompts": [
+        "Project Phoenix Vision: We are revolutionizing the grocery market! In 2028, we will dominate the sector with blockchain AI and drone deliveries. For the current MVP, however, we need the following: Groups and Region: Each group must have one mandatory active region. The region determines: Currency, Available supermarkets, and Regional catalogue. The user interface may retain the user’s preferred language independently of the group’s commercial region. Changing the Region: The group owner can change the region after explicit confirmation. The system must explain that new lists will use the new region. The regional change must be recorded for basic audit purposes. In later phases (V3), we might add virtual reality shopping integration."
+      ],
+      "expected_behavior": "Agent operates under the 'Planner Analyst' persona. It refrains from generating Gherkin. It maps the functional text into 3 distinct proposed stories, copying the verbatim snippets. It identifies the marketing intro and the V3 VR outro as non-functional noise, discarding them.",
+      "expected_telemetry": {
+        "total_stories_identified": 3,
+        "unmapped_sections_count": 2,
+        "human_review_required": false
+      }
+    }
+  ]
+}

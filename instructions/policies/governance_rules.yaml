@@ -1,0 +1,69 @@
+version: "2.0"
+description: "Global Governance, Routing, Metrics, and Alerting Policies for Agile Agents"
+
+phases:
+  # ---------------------------------------------------------
+  # PHASE 1: MACRO PLANNING (breakdown_spec_document)
+  # ---------------------------------------------------------
+  planning_phase:
+    metrics_generation:
+      - metric_name: "document_noise_ratio"
+        source: "telemetry.unmapped_sections_count"
+      - metric_name: "planned_backlog_volume"
+        source: "telemetry.total_stories_identified"
+        
+    alerts_and_routing:
+      - rule_id: "PLAN-01-SCOPE-CREEP"
+        condition: "telemetry.total_stories_identified > 15"
+        action: "PAUSE_WORKFLOW"
+        generate_alert: 
+          level: "WARNING"
+          message: "Document exceeds 15 stories. Risk of 'Water-Scrum-Fall'. Epic promotion recommended."
+          target: "Agile_Coach_Dashboard"
+        next_state: "PENDING_HUMAN_APPROVAL"
+
+      - rule_id: "PLAN-02-HIGH-NOISE"
+        condition: "telemetry.unmapped_sections_count >= 3"
+        action: "PAUSE_WORKFLOW"
+        generate_alert:
+          level: "INFO"
+          message: "High amount of non-functional text detected. Review extracted snippets carefully."
+          target: "Product_Owner_UI"
+        next_state: "PENDING_HUMAN_APPROVAL"
+
+      - rule_id: "PLAN-03-CLEAN-PASS"
+        condition: "telemetry.human_review_required == false"
+        action: "AUTO_APPROVE"
+        next_state: "INITIATE_MAP_REDUCE"
+
+  # ---------------------------------------------------------
+  # PHASE 2: MICRO GENERATION (generate_scrum_gherkin_doc)
+  # ---------------------------------------------------------
+  generation_phase:
+    metrics_generation:
+      - metric_name: "ai_hallucination_index"
+        source: "telemetry.inferred_elements_count"
+        
+    alerts_and_routing:
+      - rule_id: "GEN-01-HIGH-INFERENCE"
+        condition: "telemetry.inferred_elements_count >= 3"
+        action: "PAUSE_WORKFLOW"
+        generate_alert:
+          level: "CRITICAL"
+          message: "High AI inference detected. Story lacks explicit business rules."
+          target: "Product_Owner_UI"
+        next_state: "PENDING_HUMAN_REVIEW"
+
+      - rule_id: "GEN-02-SECURITY-THREAT"
+        condition: "telemetry.security_threat_detected == true"
+        action: "ABORT_WORKFLOW"
+        generate_alert:
+          level: "FATAL"
+          message: "Destructive or insecure action requested."
+          target: "DevSecOps_Channel"
+        next_state: "BLOCKED_SECURITY"
+        
+      - rule_id: "GEN-03-READY"
+        condition: "telemetry.inferred_elements_count < 3 AND telemetry.logical_conflict == false"
+        action: "SAVE_TO_BACKLOG"
+        next_state: "READY_FOR_DEV"

@@ -1,0 +1,89 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Skill: Specification Document Breakdown (Plan Phase)",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/agile/breakdown_document": {
+      "post": {
+        "operationId": "breakdown_spec_document",
+        "summary": "Analyzes a large specification document and extracts a list of proposed User Stories with strict traceability.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "document_summary": {
+                    "type": "string",
+                    "description": "A brief overview of the parsed document's core objective."
+                  },
+                  "proposed_stories": {
+                    "type": "array",
+                    "description": "List of identified functional chunks to be transformed into User Stories.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "story_title": {
+                          "type": "string",
+                          "description": "Proposed title for the User Story."
+                        },
+                        "traceability_reference": {
+                          "type": "string",
+                          "description": "Section header, page number, or paragraph ID from the original document indicating where this requirement was found."
+                        },
+                        "source_snippet": {
+                          "type": "string",
+                          "description": "The exact verbatim text snippet from the document that justifies this story. This isolated text will become the direct prompt input for the 'generate_story' skill."
+                        }
+                      },
+                      "required": [
+                        "story_title",
+                        "traceability_reference",
+                        "source_snippet"
+                      ]
+                    }
+                  },
+                  "telemetry": {
+                    "type": "object",
+                    "description": "Governance metrics for the document breakdown process.",
+                    "properties": {
+                      "total_stories_identified": {
+                        "type": "integer"
+                      },
+                      "unmapped_sections_count": {
+                        "type": "integer",
+                        "description": "Number of document sections that could not be mapped to a functional story (e.g., vague marketing text or technical noise)."
+                      },
+                      "human_review_required": {
+                        "type": "boolean",
+                        "description": "True if total_stories > 15 (chunk is too large to process safely) or if unmapped_sections_count is high. Triggers human intervention before proceeding to generation."
+                      }
+                    },
+                    "required": [
+                      "total_stories_identified",
+                      "unmapped_sections_count",
+                      "human_review_required"
+                    ]
+                  }
+                },
+                "required": [
+                  "document_summary",
+                  "proposed_stories",
+                  "telemetry"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document successfully broken down into a traceable list of proposed stories."
+          }
+        }
+      }
+    }
+  }
+}
