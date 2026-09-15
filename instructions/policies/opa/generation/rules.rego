@@ -15,6 +15,21 @@ high_inference := {
     "message": "High AI inference detected. Story lacks explicit business rules."
 } if input.telemetry.inferred_elements_count >= 3
 
+# Regla GEN-04
+# METADATA
+# title: Missing Acceptance Criteria Auto-Completion
+# description: Autoriza a la IA a auto-completar los criterios de aceptación faltantes, obligando a usar la etiqueta [AI-Inferred].
+missing_acceptance := {
+    "rule_id": "GEN-04-MISSING-ACCEPTANCE",
+    "level": "INFO",
+    "action": "AUTO_COMPLETE",
+    "next_state": "AI_INFERENCE_IN_PROGRESS",
+    "target": "Agile_Business_Analyst_Agent",
+    "message": "Acceptance criteria is missing. Authorized to auto-complete. Must tag scenarios with [AI-Inferred]."
+} if {
+    input.telemetry.acceptance_criteria_count == 0
+}
+
 # Regla GEN-02
 # METADATA
 # title: Security Threat Detected
