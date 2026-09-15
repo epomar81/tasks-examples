@@ -104,7 +104,19 @@ All agent behaviors and state transitions are governed deterministically by [`in
 skills-library/
 ├── instructions/
 │   ├── policies/
-│   │   └── governance_rules.yaml         # Version 2.0 governance, thresholds, alerts & state routing
+│   │   ├── governance_rules.yaml        # Legacy/Reference Version 2.0 governance, thresholds, alerts & state routing
+│   │   └── opa/                         # OPA Rego Policies Architecture (Policy-as-Code)
+│   │       ├── main.rego                # Global entrypoint for policy routing
+│   │       ├── planning/                # Macro Planning policies and rules
+│   │       │   ├── policy.rego
+│   │       │   ├── rules.rego
+│   │       │   └── metrics.rego
+│   │       ├── generation/              # Micro Generation policies and rules
+│   │       │   ├── policy.rego
+│   │       │   ├── rules.rego
+│   │       │   └── metrics.rego
+│   │       └── metapolicies/            # Meta-governance rules
+│   │           └── rule_governance.rego
 │   └── system-prompts/
 │       ├── business_analyst.md          # Micro-generation prompt (DoR, Proactive Inference, Critique)
 │       └── planner_analyst.md           # Macro-planning prompt (Chunking, Traceability, Noise Filtering)
