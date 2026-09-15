@@ -6,42 +6,40 @@ This repository implements a production-grade **Agentic AI System** designed to 
 
 Rather than relying on fragile monolithic prompts, this system is built on a **Decoupled 2-Phase Multi-Agent Architecture** governed by strict OpenAPI contracts, proactive inference mechanisms, and automated quality gates (telemetry, policies, and alerts).
 
-```
-   ┌──────────────────────────────────────────────────────────────┐
-   │                Unstructured Spec Document                    │
-   └──────────────────────────────┬───────────────────────────────┘
-                                  │
-                                  ▼
-   ┌──────────────────────────────────────────────────────────────┐
-   │        PHASE 1: MACRO PLANNING (Planner Analyst)             │
-   │  - System Prompt: instructions/system-prompts/planner_analyst│
-   │  - Skill: breakdown_spec_document (/api/v1/agile/breakdown)  │
-   │  - Extracts: Document Summary, Verbatim Snippets, Noise Count│
-   └──────────────────────────────┬───────────────────────────────┘
-                                  │
-                                  ▼
-   ┌──────────────────────────────────────────────────────────────┐
-   │         GOVERNANCE QUALITY GATE: PLANNING PHASE              │
-   │  - PLAN-01: Stories > 15      ──► WARNING ──► PAUSE (Epic)   │
-   │  - PLAN-02: Noise >= 3        ──► INFO    ──► PAUSE (PO UI)  │
-   │  - PLAN-03: Clean Pass        ──► AUTO_APPROVE               │
-   └──────────────────────────────┬───────────────────────────────┘
-                                  │ (INITIATE_MAP_REDUCE)
-                                  ▼
-   ┌──────────────────────────────────────────────────────────────┐
-   │        PHASE 2: MICRO GENERATION (Business Analyst)          │
-   │  - System Prompt: instructions/system-prompts/business_analyst│
-   │  - Skill: generate_scrum_gherkin_doc (/api/v3/agile/generate)│
-   │  - Proactive Inference ([AI-Inferred]), Security & Logic     │
-   └──────────────────────────────┬───────────────────────────────┘
-                                  │
-                                  ▼
-   ┌──────────────────────────────────────────────────────────────┐
-   │        GOVERNANCE QUALITY GATE: GENERATION PHASE             │
-   │  - GEN-01: Inferred >= 3      ──► CRITICAL ──► Human Review  │
-   │  - GEN-02: Security Threat    ──► FATAL    ──► ABORT & BLOCK │
-   │  - GEN-03: Low Inference      ──► SAVE_TO_BACKLOG            │
-   └──────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    classDef doc fill:#f4f4f4,stroke:#333,stroke-width:2px;
+    classDef phase fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef gate fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+    classDef alertWarning fill:#fff9c4,stroke:#fbc02d;
+    classDef alertInfo fill:#e3f2fd,stroke:#1976d2;
+    classDef alertCritical fill:#ffcdd2,stroke:#d32f2f;
+    classDef alertFatal fill:#b71c1c,stroke:#b71c1c,color:#fff;
+    classDef success fill:#c8e6c9,stroke:#388e3c;
+
+    Doc["📄 Unstructured Spec Document"]:::doc --> Phase1
+
+    subgraph P1["PHASE 1: MACRO PLANNING (Planner Analyst)"]
+        Phase1["⚙️ Skill: breakdown_spec_document"]:::phase
+        Gate1{"Governance Quality Gate"}:::gate
+        
+        Phase1 --> Gate1
+        Gate1 -- "PLAN-01: Stories > 15" --> W1["WARNING ➔ PAUSE (Epic)"]:::alertWarning
+        Gate1 -- "PLAN-02: Noise ≥ 3" --> I1["INFO ➔ PAUSE (PO UI)"]:::alertInfo
+        Gate1 -- "PLAN-03: Clean Pass" --> S1["AUTO_APPROVE"]:::success
+    end
+
+    S1 -- "INITIATE_MAP_REDUCE" --> Phase2
+
+    subgraph P2["PHASE 2: MICRO GENERATION (Business Analyst)"]
+        Phase2["⚙️ Skill: generate_scrum_gherkin_doc"]:::phase
+        Gate2{"Governance Quality Gate"}:::gate
+
+        Phase2 --> Gate2
+        Gate2 -- "GEN-01: Inferred ≥ 3" --> C1["CRITICAL ➔ Human Review"]:::alertCritical
+        Gate2 -- "GEN-02: Security Threat" --> F1["FATAL ➔ ABORT & BLOCK"]:::alertFatal
+        Gate2 -- "GEN-03: Low Inference" --> S2["SAVE_TO_BACKLOG"]:::success
+    end
 ```
 
 ---
